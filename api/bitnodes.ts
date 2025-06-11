@@ -1,4 +1,4 @@
-interface Data {
+interface BitnodesData {
   timestamp: number;
   total_nodes: number;
   latest_height: number;
@@ -21,7 +21,7 @@ type BtcNode = [
   networkDesc: string, // e.g. "Tor network"
 ];
 
-export interface Result {
+export interface NodesData {
   knots: number;
   core: number;
   others: number;
@@ -58,16 +58,16 @@ export function getSnapshots(
     .then((data) => data as SnapshotResponse);
 }
 
-export async function getBitcoinNodeData(url: string): Promise<Result> {
+export async function getBitcoinNodeData(url: string): Promise<NodesData> {
   const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch user agent data: ${response.status}`);
   }
 
-  const data: Data = await response.json();
+  const data: BitnodesData = await response.json();
 
-  const result: Result = {
+  const result: NodesData = {
     knots: 0,
     core: 0,
     others: 0,
@@ -123,4 +123,25 @@ export async function findClosestSnapshot(
   }
 
   return closestSnapshot;
+}
+
+export function getDifference(resultCurrent: NodesData, resultOld: NodesData) {
+  const coreChangePercentage =
+    Math.round(
+      (resultCurrent.corePercentage - resultOld.corePercentage) * 100,
+    ) / 100;
+  const knotsChangePercentage =
+    Math.round(
+      (resultCurrent.knotsPercentage - resultOld.knotsPercentage) * 100,
+    ) / 100;
+  const othersChangePercentage =
+    Math.round(
+      (resultCurrent.othersPercentage - resultOld.othersPercentage) * 100,
+    ) / 100;
+
+  return {
+    coreChangePercentage,
+    knotsChangePercentage,
+    othersChangePercentage,
+  };
 }

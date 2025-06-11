@@ -2,6 +2,7 @@ import "dotenv/config";
 import { TwitterApi } from "twitter-api-v2";
 
 const xClient = new TwitterApi({
+  // @ts-ignore
   appKey: process.env.X_APP_KEY,
   appSecret: process.env.X_APP_KEY_SECRET,
   accessToken: process.env.X_ACCESS_TOKEN,

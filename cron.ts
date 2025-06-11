@@ -2,34 +2,10 @@ import cron from "node-cron";
 import {
   findClosestSnapshot,
   getBitcoinNodeData,
-  Result,
+  getDifference,
 } from "./api/bitnodes";
+import { checkPositive } from "./helpers/helpers";
 import xClient from "./account";
-
-function checkPositive(value: number): string {
-  return value > 0 ? "+" : "";
-}
-
-function getDifference(resultCurrent: Result, resultOld: Result) {
-  const coreChangePercentage =
-    Math.round(
-      (resultCurrent.corePercentage - resultOld.corePercentage) * 100,
-    ) / 100;
-  const knotsChangePercentage =
-    Math.round(
-      (resultCurrent.knotsPercentage - resultOld.knotsPercentage) * 100,
-    ) / 100;
-  const othersChangePercentage =
-    Math.round(
-      (resultCurrent.othersPercentage - resultOld.othersPercentage) * 100,
-    ) / 100;
-
-  return {
-    coreChangePercentage,
-    knotsChangePercentage,
-    othersChangePercentage,
-  };
-}
 
 async function post() {
   const dayAgoTimestamp = Math.floor(Date.now() / 1000) - 86400;
@@ -69,6 +45,7 @@ Core: ${checkPositive(diffWeekAgo.coreChangePercentage)}${diffWeekAgo.coreChange
 Knots: ${checkPositive(diffWeekAgo.knotsChangePercentage)}${diffWeekAgo.knotsChangePercentage}%
 Others: ${checkPositive(diffWeekAgo.othersChangePercentage)}${diffWeekAgo.othersChangePercentage}%
     `;
+
     await xClient.v2.tweet(tweet);
     console.log("Tweet posted successfully:", tweet);
   } catch (error) {
@@ -83,7 +60,3 @@ cron.schedule("0 16 * * *", async () => {
   );
   await post();
 });
-
-(async function () {
-  await post();
-})();
