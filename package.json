@@ -4,7 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsx index.ts"
+    "start": "tsx index.ts",
+    "cron": "tsx cron.ts"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,7 @@
   "repository": "https://github.com/unlockiest/BitcoinWhistleX",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "node-cron": "^4.1.0",
     "prettier": "^3.5.3",
     "tsx": "^4.19.4",
     "twitter-api-v2": "^1.23.2"
