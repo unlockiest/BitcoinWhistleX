@@ -17,7 +17,7 @@ async function post() {
   );
   const weekAgoSnapshot = await findClosestSnapshot(
     weekAgoTimestamp,
-    "https://bitnodes.io/api/v1/snapshots?limit=100&page=9",
+    "https://bitnodes.io/api/v1/snapshots?limit=100&page=10",
   );
   try {
     const result = await getBitcoinNodeData(
@@ -54,7 +54,7 @@ Others: ${checkPositive(diffWeekAgo.othersChangePercentage)}${diffWeekAgo.others
   }
 }
 // Schedule the task to run daily at 4pm UTC
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("0 16 * * *", async () => {
   console.log(
     "Running scheduled task to post Bitcoin node data...",
     new Date().toISOString(),
@@ -71,3 +71,6 @@ http
   .listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   });
+(async function () {
+  await post();
+})();
