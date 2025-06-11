@@ -106,12 +106,13 @@ export async function getBitcoinNodeData(url: string): Promise<Result> {
 
 export async function findClosestSnapshot(
   timestamp: number,
+  startUrl: string,
 ): Promise<Snapshot | null> {
-  let nextUrl: string | null =
-    "https://bitnodes.io/api/v1/snapshots?limit=100&page=2";
+  let nextUrl: string | null = startUrl;
   let closestSnapshot: Snapshot | null = null;
 
   while (!closestSnapshot) {
+    console.log({ nextUrl });
     const snapshotsResponse = await getSnapshots(nextUrl as string);
     for (const snapshot of snapshotsResponse.results) {
       if (snapshot.timestamp <= timestamp) {

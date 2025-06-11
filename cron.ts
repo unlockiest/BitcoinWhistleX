@@ -34,8 +34,14 @@ function getDifference(resultCurrent: Result, resultOld: Result) {
 async function post() {
   const dayAgoTimestamp = Math.floor(Date.now() / 1000) - 86400;
   const weekAgoTimestamp = Math.floor(Date.now() / 1000) - 604800;
-  const dayAgoSnapshot = await findClosestSnapshot(dayAgoTimestamp);
-  const weekAgoSnapshot = await findClosestSnapshot(weekAgoTimestamp);
+  const dayAgoSnapshot = await findClosestSnapshot(
+    dayAgoTimestamp,
+    "https://bitnodes.io/api/v1/snapshots?limit=100&page=2",
+  );
+  const weekAgoSnapshot = await findClosestSnapshot(
+    weekAgoTimestamp,
+    "https://bitnodes.io/api/v1/snapshots?limit=100&page=9",
+  );
   try {
     const result = await getBitcoinNodeData(
       "https://bitnodes.io/api/v1/snapshots/latest/",
@@ -46,14 +52,14 @@ async function post() {
     const diffWeekAgo = getDifference(result, resultWeekAgo);
 
     const tweet = `
-Bitcoin Node Data:
+Today's Bitcoin Node Data:
 
 Total Nodes:  ${result.totalNodes}
 Core: ${result.core} (${result.corePercentage.toFixed(2)}%)
 Knots: ${result.knots} (${result.knotsPercentage.toFixed(2)}%)
 Others: ${result.others} (${result.othersPercentage.toFixed(2)}%)
 
-Since last day:
+Since yesterday:
 Core: ${checkPositive(diffDayAgo.coreChangePercentage)}${diffDayAgo.coreChangePercentage}%
 Knots: ${checkPositive(diffDayAgo.knotsChangePercentage)}${diffDayAgo.knotsChangePercentage}%
 Others: ${checkPositive(diffDayAgo.othersChangePercentage)}${diffDayAgo.othersChangePercentage}%
