@@ -1,0 +1,11 @@
+app = "bitcoinwhistlex"
+primary_region = "iad"
+
+[build]
+dockerfile = "Dockerfile"
+
+[env]
+NODE_ENV = "production"
+
+[deploy]
+release_command = "npm run start"
