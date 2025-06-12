@@ -139,9 +139,12 @@ export function getDifference(resultCurrent: NodesData, resultOld: NodesData) {
       (resultCurrent.othersPercentage - resultOld.othersPercentage) * 100,
     ) / 100;
 
+  const totalNodesChange = resultCurrent.totalNodes - resultOld.totalNodes;
+
   return {
     coreChangePercentage,
     knotsChangePercentage,
     othersChangePercentage,
+    totalNodesChange,
   };
 }

@@ -37,18 +37,18 @@ Knots: ${result.knots} (${result.knotsPercentage.toFixed(2)}%)
 Others: ${result.others} (${result.othersPercentage.toFixed(2)}%)
 
 Since yesterday:
-Core: ${checkPositive(diffDayAgo.coreChangePercentage)}${diffDayAgo.coreChangePercentage}%
-Knots: ${checkPositive(diffDayAgo.knotsChangePercentage)}${diffDayAgo.knotsChangePercentage}%
-Others: ${checkPositive(diffDayAgo.othersChangePercentage)}${diffDayAgo.othersChangePercentage}%
+Core: ${checkPositive(diffDayAgo.coreChangePercentage)}%
+Knots: ${checkPositive(diffDayAgo.knotsChangePercentage)}%
+Others: ${checkPositive(diffDayAgo.othersChangePercentage)}%
 
 Since last week:
-Core: ${checkPositive(diffWeekAgo.coreChangePercentage)}${diffWeekAgo.coreChangePercentage}%
-Knots: ${checkPositive(diffWeekAgo.knotsChangePercentage)}${diffWeekAgo.knotsChangePercentage}%
-Others: ${checkPositive(diffWeekAgo.othersChangePercentage)}${diffWeekAgo.othersChangePercentage}%
+Core: ${checkPositive(diffWeekAgo.coreChangePercentage)}%
+Knots: ${checkPositive(diffWeekAgo.knotsChangePercentage)}%
+Others: ${checkPositive(diffWeekAgo.othersChangePercentage)}%
     `;
-
+    console.log("Tweeting content:", tweet);
     await xClient.v2.tweet(tweet);
-    console.log("Tweet posted successfully:", tweet);
+    console.log("Tweet posted successfully:");
   } catch (error) {
     console.error("Failed to post tweet:", error);
   }
