@@ -54,7 +54,7 @@ Others: ${checkPositive(diffWeekAgo.othersChangePercentage)}${diffWeekAgo.others
   }
 }
 // Schedule the task to run daily at 4pm UTC
-cron.schedule("0 16 * * *", async () => {
+cron.schedule("0 4,16 * * *", async () => {
   console.log(
     "Running scheduled task to post Bitcoin node data...",
     new Date().toISOString(),
@@ -71,6 +71,3 @@ http
   .listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   });
-(async function () {
-  await post();
-})();
