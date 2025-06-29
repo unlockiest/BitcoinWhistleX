@@ -24,6 +24,10 @@ type BtcNode = [
 export interface NodesData {
   knots: number;
   core: number;
+  btcd: number;
+  toshi: number;
+  libbitcoin: number;
+  nbitcoin: number;
   others: number;
   knotsPercentage: number;
   corePercentage: number;
@@ -71,6 +75,10 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
     knots: 0,
     core: 0,
     others: 0,
+    btcd: 0,
+    toshi: 0,
+    libbitcoin: 0,
+    nbitcoin: 0,
     knotsPercentage: 0,
     corePercentage: 0,
     othersPercentage: 0,
@@ -79,16 +87,26 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
 
   for (const entry in data.nodes) {
     const userAgent = data.nodes[entry][1];
-    //console.log({ userAgent });
     // Ensure compatibility with 'includes' method
     const isKnots = userAgent.toLowerCase().includes("knots");
+    const isBtcd = userAgent.toLowerCase().includes("btcd"); // identified
+    const isLibbitcoin = userAgent.toLowerCase().includes("libbitcoin");
+    const isNBitcoin = userAgent.toLowerCase().includes("nbitcoin");
     const isCore = userAgent.toLowerCase().includes("satoshi");
-    const isOther = !isKnots && !isCore;
+    const isToshi = userAgent.toLowerCase().includes("toshi");
     if (isKnots) {
       result.knots++;
+    } else if (isBtcd) {
+      result.btcd++;
+    } else if (isLibbitcoin) {
+      result.libbitcoin++;
+    } else if (isNBitcoin) {
+      result.nbitcoin++;
     } else if (isCore) {
       result.core++;
-    } else if (isOther) {
+    } else if (isToshi) {
+      result.toshi++;
+    } else {
       result.others++;
     }
   }
@@ -112,7 +130,6 @@ export async function findClosestSnapshot(
   let closestSnapshot: Snapshot | null = null;
 
   while (!closestSnapshot) {
-    console.log({ nextUrl });
     const snapshotsResponse = await getSnapshots(nextUrl as string);
     for (const snapshot of snapshotsResponse.results) {
       if (snapshot.timestamp <= timestamp) {
