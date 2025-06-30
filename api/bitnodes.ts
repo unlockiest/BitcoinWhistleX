@@ -21,6 +21,12 @@ type BtcNode = [
   networkDesc: string, // e.g. "Tor network"
 ];
 
+interface Version {
+  version: string;
+  count: number;
+  percentage: number;
+}
+
 export interface NodesData {
   knots: number;
   core: number;
@@ -33,6 +39,7 @@ export interface NodesData {
   corePercentage: number;
   othersPercentage: number;
   totalNodes: number;
+  versions: Version[];
 }
 
 interface Snapshot {
@@ -72,6 +79,7 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
   const data: BitnodesData = await response.json();
 
   const result: NodesData = {
+    totalNodes: data.total_nodes,
     knots: 0,
     core: 0,
     others: 0,
@@ -82,7 +90,7 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
     knotsPercentage: 0,
     corePercentage: 0,
     othersPercentage: 0,
-    totalNodes: data.total_nodes,
+    versions: [],
   };
 
   for (const entry in data.nodes) {
@@ -96,6 +104,17 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
     const isToshi = userAgent.toLowerCase().includes("toshi");
     if (isKnots) {
       result.knots++;
+      const version = `Knots: v.${userAgent.match(/knots:(.*?)\//i)?.[1]}`;
+      if (version) {
+        const existingVersion = result.versions.find(
+          (v) => v.version === version,
+        );
+        if (existingVersion) {
+          existingVersion.count++;
+        } else {
+          result.versions.push({ version, count: 1, percentage: 0 });
+        }
+      }
     } else if (isBtcd) {
       result.btcd++;
     } else if (isLibbitcoin) {
@@ -104,6 +123,21 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
       result.nbitcoin++;
     } else if (isCore) {
       result.core++;
+      const coreVersion = `Core: v.${userAgent.match(/Satoshi:([\d\.]+)/)?.[1]}`;
+      if (coreVersion) {
+        const existingVersion = result.versions.find(
+          (v) => v.version === coreVersion,
+        );
+        if (existingVersion) {
+          existingVersion.count++;
+        } else {
+          result.versions.push({
+            version: coreVersion,
+            count: 1,
+            percentage: 0,
+          });
+        }
+      }
     } else if (isToshi) {
       result.toshi++;
     } else {
@@ -118,6 +152,15 @@ export async function getBitcoinNodeData(url: string): Promise<NodesData> {
     result.corePercentage = (result.core / total) * 100;
     result.othersPercentage = (result.others / total) * 100;
   }
+
+  // Calculate percentages for versions
+  result.versions.forEach((version) => {
+    version.percentage = Number(
+      ((version.count / result.totalNodes) * 100).toFixed(2),
+    );
+  });
+  // Sort versions by percentage in descending order
+  result.versions.sort((a, b) => b.percentage - a.percentage);
 
   return result;
 }
