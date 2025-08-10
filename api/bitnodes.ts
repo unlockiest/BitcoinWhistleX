@@ -1,4 +1,4 @@
-interface BitnodesData {
+export interface BitnodesData {
   timestamp: number;
   total_nodes: number;
   latest_height: number;
@@ -69,15 +69,9 @@ export function getSnapshots(
     .then((data) => data as SnapshotResponse);
 }
 
-export async function getBitcoinNodeData(url: string): Promise<NodesData> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch user agent data: ${response.status}`);
-  }
-
-  const data: BitnodesData = await response.json();
-
+export async function getBitcoinNodeData(
+  data: BitnodesData,
+): Promise<NodesData> {
   const result: NodesData = {
     totalNodes: data.total_nodes,
     knots: 0,
@@ -181,7 +175,7 @@ export async function findClosestSnapshot(
     }
     nextUrl = snapshotsResponse.next;
   }
-
+  console.log(`find closest snapshot: ${startUrl}`, closestSnapshot.timestamp);
   return closestSnapshot;
 }
 
@@ -207,4 +201,15 @@ export function getDifference(resultCurrent: NodesData, resultOld: NodesData) {
     othersChangePercentage,
     totalNodesChange,
   };
+}
+
+export function fetchSnapshot(url: string): Promise<BitnodesData> {
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch snapshot: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => data as BitnodesData);
 }
